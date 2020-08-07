@@ -1,0 +1,63 @@
+specVersion: 0.0.2
+description: Loopring subgraph
+repository:
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: LoopringV3
+    network: mainnet
+    source:
+      address: "0x18dd1dda037b009f7c1024dddd58e4fe9f960ac7"
+      abi: LoopringV3
+      startBlock: 9206856
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/index.ts
+      entities:
+        - InterfaceImplementation
+      abis:
+        - name: LoopringV3
+          file: ./abis/LoopringV3.json
+      eventHandlers:
+        - event: ExchangeInitialized(indexed uint256,indexed address,indexed address,address,bool)
+          handler: handleExchangeInitialized
+        # - event: ExchangeStakeBurned(indexed uint256,uint256)
+        #   handler: handleExchangeStakeBurned
+        # - event: ExchangeStakeDeposited(indexed uint256,uint256)
+        #   handler: handleExchangeStakeDeposited
+        # - event: ExchangeStakeWithdrawn(indexed uint256,uint256)
+        #   handler: handleExchangeStakeWithdrawn
+        # - event: ProtocolFeeStakeDeposited(indexed uint256,uint256)
+        #   handler: handleProtocolFeeStakeDeposited
+        # - event: ProtocolFeeStakeWithdrawn(indexed uint256,uint256)
+        #   handler: handleProtocolFeeStakeWithdrawn
+  # - ExchangeInitialized(indexed uint256,indexed address,indexed address,address,bool)
+  # - ExchangeStakeBurned(indexed uint256,uint256)
+  # - ExchangeStakeDeposited(indexed uint256,uint256)
+  # - ExchangeStakeWithdrawn(indexed uint256,uint256)
+  # - OwnershipTransferred(indexed address,indexed address)
+  # - ProtocolFeeStakeDeposited(indexed uint256,uint256)
+  # - ProtocolFeeStakeWithdrawn(indexed uint256,uint256)
+  # - SettingsUpdated(uint256)
+templates:
+  - name: ERC20
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: ERC20
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/index.ts
+      entities:
+        - FinancialContract
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
