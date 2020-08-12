@@ -1,11 +1,31 @@
 type Exchange @entity {
   id: ID!
 
-  address: Bytes!
+  internalId: BigInt!
+
+  proxyAddress: Bytes!
+
+  implementationAddress: Bytes
 
   owner: Bytes!
 
   operator: Bytes!
 
   onChainDataAvailability: Boolean!
+
+  accounts: [Account!]! @derivedFrom(field: "exchange")
+}
+
+type Account @entity {
+  id: ID!
+
+  exchange: Exchange!
+
+  internalId: Int!
+
+  pubKeyX: BigInt!
+
+  pubKeyY: BigInt!
+
+  owner: Bytes!
 }
