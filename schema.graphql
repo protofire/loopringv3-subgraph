@@ -14,6 +14,8 @@ type Exchange @entity {
   onChainDataAvailability: Boolean!
 
   accounts: [Account!]! @derivedFrom(field: "exchange")
+
+  tokens: [Token!]! @derivedFrom(field: "exchange")
 }
 
 type Account @entity {
@@ -28,4 +30,20 @@ type Account @entity {
   pubKeyY: BigInt!
 
   owner: Bytes!
+}
+
+type Token @entity {
+  id: ID!
+
+  exchange: Exchange!
+
+  internalId: Int!
+
+  address: Bytes!
+
+  decimals: Int!
+
+  name: String!
+
+  symbol: String!
 }

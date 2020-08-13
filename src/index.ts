@@ -4,5 +4,7 @@ export {
 
 export {
   handleAccountCreated,
-  handleBlockVerified
+  handleAccountUpdated,
+  handleBlockVerified,
+  handleTokenRegistered
 } from "./mappings/exchangev3";

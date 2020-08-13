@@ -80,11 +80,17 @@ templates:
       abis:
         - name: ExchangeV3
           file: ./abis/ExchangeV3.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: AccountCreated(indexed address,indexed uint24,uint256,uint256)
           handler: handleAccountCreated
+        - event: AccountUpdated(indexed address,indexed uint24,uint256,uint256)
+          handler: handleAccountUpdated
         - event: BlockVerified(indexed uint256)
           handler: handleBlockVerified
+        - event: TokenRegistered(indexed address,indexed uint16)
+          handler: handleTokenRegistered
   # - AccountCreated(indexed address,indexed uint24,uint256,uint256)
   # - AccountUpdated(indexed address,indexed uint24,uint256,uint256)
   # - AddressWhitelistChanged(indexed uint256,address,address)
