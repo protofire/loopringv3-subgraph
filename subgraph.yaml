@@ -5,6 +5,28 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
+    name: LRC
+    network: mainnet
+    source:
+      address: "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd"
+      abi: LRC
+      startBlock: 7544036
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/index.ts
+      entities:
+        - InterfaceImplementation
+      abis:
+        - name: LRC
+          file: ./abis/LRC.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleLRCTransfer
+        - event: Burn(indexed address,uint256)
+          handler: handleLRCBurn
+  - kind: ethereum/contract
     name: LoopringV3
     network: mainnet
     source:

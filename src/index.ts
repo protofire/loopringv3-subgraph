@@ -8,3 +8,8 @@ export {
   handleBlockVerified,
   handleTokenRegistered
 } from "./mappings/exchangev3";
+
+export {
+  handleLRCTransfer,
+  handleLRCBurn
+} from "./mappings/lrcv2";

@@ -8,7 +8,8 @@ import {
 import {
   getOrCreateExchange,
   getOrCreateAccount,
-  getOrCreateToken
+  getOrCreateToken,
+  getOrCreateUser
 } from "../utils/helpers";
 
 // - event: AccountCreated(indexed address,indexed uint24,uint256,uint256)
@@ -21,13 +22,14 @@ import {
 export function handleAccountCreated(event: AccountCreated): void {
   let accountId = event.address
     .toHexString()
-    .concat('-')
+    .concat("-")
     .concat(BigInt.fromI32(event.params.id).toString());
   let account = getOrCreateAccount(accountId);
+  let user = getOrCreateUser(event.params.owner.toHexString());
 
   account.exchange = event.address.toHexString();
   account.internalId = event.params.id;
-  account.owner = event.params.owner;
+  account.owner = user.id;
   account.pubKeyX = event.params.pubKeyX;
   account.pubKeyY = event.params.pubKeyY;
 
@@ -40,12 +42,13 @@ export function handleAccountCreated(event: AccountCreated): void {
 export function handleAccountUpdated(event: AccountUpdated): void {
   let accountId = event.address
     .toHexString()
-    .concat('-')
+    .concat("-")
     .concat(BigInt.fromI32(event.params.id).toString());
   let account = getOrCreateAccount(accountId);
+  let user = getOrCreateUser(event.params.owner.toHexString());
 
   account.exchange = event.address.toHexString();
-  account.owner = event.params.owner;
+  account.owner = user.id;
   account.pubKeyX = event.params.pubKeyX;
   account.pubKeyY = event.params.pubKeyY;
 
@@ -65,7 +68,7 @@ export function handleBlockVerified(event: BlockVerified): void {
 export function handleTokenRegistered(event: TokenRegistered): void {
   let tokenId = event.address
     .toHexString()
-    .concat('-')
+    .concat("-")
     .concat(BigInt.fromI32(event.params.tokenId).toString());
   let token = getOrCreateToken(tokenId, event.params.token);
 

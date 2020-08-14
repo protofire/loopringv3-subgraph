@@ -29,7 +29,7 @@ type Account @entity {
 
   pubKeyY: BigInt!
 
-  owner: Bytes!
+  owner: User!
 }
 
 type Token @entity {
@@ -46,4 +46,18 @@ type Token @entity {
   name: String!
 
   symbol: String!
+}
+
+type User @entity {
+  id: ID!
+
+  account: Account! @derivedFrom(field: "owner")
+
+  lrcBalanceRaw: BigInt!
+
+  lrcBalance: BigDecimal!
+
+  lrcBurnedRaw: BigInt!
+
+  lrcBurned: BigDecimal!
 }
