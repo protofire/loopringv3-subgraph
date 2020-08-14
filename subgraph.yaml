@@ -47,27 +47,21 @@ dataSources:
           file: ./abis/ExchangeProxy.json
         - name: ExchangeV3
           file: ./abis/ExchangeV3.json
+        - name: UniversalRegistry
+          file: ./abis/UniversalRegistry.json
       eventHandlers:
         - event: ExchangeInitialized(indexed uint256,indexed address,indexed address,address,bool)
           handler: handleExchangeInitialized
-        # - event: ExchangeStakeBurned(indexed uint256,uint256)
-        #   handler: handleExchangeStakeBurned
-        # - event: ExchangeStakeDeposited(indexed uint256,uint256)
-        #   handler: handleExchangeStakeDeposited
-        # - event: ExchangeStakeWithdrawn(indexed uint256,uint256)
-        #   handler: handleExchangeStakeWithdrawn
-        # - event: ProtocolFeeStakeDeposited(indexed uint256,uint256)
-        #   handler: handleProtocolFeeStakeDeposited
-        # - event: ProtocolFeeStakeWithdrawn(indexed uint256,uint256)
-        #   handler: handleProtocolFeeStakeWithdrawn
-  # - ExchangeInitialized(indexed uint256,indexed address,indexed address,address,bool)
-  # - ExchangeStakeBurned(indexed uint256,uint256)
-  # - ExchangeStakeDeposited(indexed uint256,uint256)
-  # - ExchangeStakeWithdrawn(indexed uint256,uint256)
-  # - OwnershipTransferred(indexed address,indexed address)
-  # - ProtocolFeeStakeDeposited(indexed uint256,uint256)
-  # - ProtocolFeeStakeWithdrawn(indexed uint256,uint256)
-  # - SettingsUpdated(uint256)
+        - event: ExchangeStakeBurned(indexed uint256,uint256)
+          handler: handleExchangeStakeBurned
+        - event: ExchangeStakeDeposited(indexed uint256,uint256)
+          handler: handleExchangeStakeDeposited
+        - event: ExchangeStakeWithdrawn(indexed uint256,uint256)
+          handler: handleExchangeStakeWithdrawn
+        - event: ProtocolFeeStakeDeposited(indexed uint256,uint256)
+          handler: handleProtocolFeeStakeDeposited
+        - event: ProtocolFeeStakeWithdrawn(indexed uint256,uint256)
+          handler: handleProtocolFeeStakeWithdrawn
 templates:
   - name: ERC20
     kind: ethereum/contract

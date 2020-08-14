@@ -1,5 +1,10 @@
 export {
-  handleExchangeInitialized
+  handleExchangeInitialized,
+  handleExchangeStakeBurned,
+  handleExchangeStakeDeposited,
+  handleExchangeStakeWithdrawn,
+  handleProtocolFeeStakeDeposited,
+  handleProtocolFeeStakeWithdrawn
 } from "./mappings/loopringv3";
 
 export {

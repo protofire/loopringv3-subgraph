@@ -13,6 +13,34 @@ type Exchange @entity {
 
   onChainDataAvailability: Boolean!
 
+  exchangeStake: BigDecimal!
+
+  exchangeStakeRaw: BigInt!
+
+  protocolStake: BigDecimal!
+
+  protocolStakeRaw: BigInt!
+
+  totalExchangeStakeBurned: BigDecimal!
+
+  totalExchangeStakeBurnedRaw: BigInt!
+
+  totalExchangeStakeDeposited: BigDecimal!
+
+  totalExchangeStakeDepositedRaw: BigInt!
+
+  totalExchangeStakeWithdrawn: BigDecimal!
+
+  totalExchangeStakeWithdrawnRaw: BigInt!
+
+  totalProtocolStakeDeposited: BigDecimal!
+
+  totalProtocolStakeDepositedRaw: BigInt!
+
+  totalProtocolStakeWithdrawn: BigDecimal!
+
+  totalProtocolStakeWithdrawnRaw: BigInt!
+
   accounts: [Account!]! @derivedFrom(field: "exchange")
 
   tokens: [Token!]! @derivedFrom(field: "exchange")
