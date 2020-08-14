@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: Loopring subgraph
-repository:
+repository: https://github.com/protofire/loopringv3-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
