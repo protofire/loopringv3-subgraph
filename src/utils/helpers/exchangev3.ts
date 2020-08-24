@@ -1,4 +1,4 @@
-import { Account, Token } from "../../../generated/schema";
+import { Account, Token, Block } from "../../../generated/schema";
 import { ERC20 } from "../../../generated/templates/ERC20/ERC20";
 import { Address } from "@graphprotocol/graph-ts";
 import { DEFAULT_DECIMALS } from "../../utils/decimals";
@@ -40,4 +40,17 @@ export function getOrCreateToken(
   }
 
   return token as Token;
+}
+
+export function getOrCreateBlock(
+  id: String,
+  createIfNotFound: boolean = true
+): Block {
+  let block = Block.load(id);
+
+  if (block == null && createIfNotFound) {
+    block = new Block(id);
+  }
+
+  return block as Block;
 }

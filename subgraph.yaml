@@ -103,27 +103,39 @@ templates:
           handler: handleAccountCreated
         - event: AccountUpdated(indexed address,indexed uint24,uint256,uint256)
           handler: handleAccountUpdated
+        - event: BlockCommitted(indexed uint256,indexed bytes32)
+          handler: handleBlockCommitted
         - event: BlockVerified(indexed uint256)
           handler: handleBlockVerified
+        - event: Revert(indexed uint256)
+          handler: handleRevert
+        - event: BlockFinalized(indexed uint256)
+          handler: handleBlockFinalized
+        - event: BlockFeeWithdrawn(indexed uint256,uint256)
+          handler: handleBlockFeeWithdrawn
         - event: TokenRegistered(indexed address,indexed uint16)
           handler: handleTokenRegistered
-  # - AccountCreated(indexed address,indexed uint24,uint256,uint256)
-  # - AccountUpdated(indexed address,indexed uint24,uint256,uint256)
+        - event: OperatorChanged(indexed uint256,address,address)
+          handler: handleOperatorChanged
+        - event: ProtocolFeesUpdated(uint8,uint8,uint8,uint8)
+          handler: handleProtocolFeesUpdated
+  # + AccountCreated(indexed address,indexed uint24,uint256,uint256)
+  # + AccountUpdated(indexed address,indexed uint24,uint256,uint256)
   # - AddressWhitelistChanged(indexed uint256,address,address)
-  # - BlockCommitted(indexed uint256,indexed bytes32)
+  # / BlockCommitted(indexed uint256,indexed bytes32)
   # - BlockFeeWithdrawn(indexed uint256,uint256)
-  # - BlockFinalized(indexed uint256)
-  # - BlockVerified(indexed uint256)
+  # / BlockFinalized(indexed uint256)
+  # / BlockVerified(indexed uint256)
   # - Cloned(indexed address)
   # - DepositRequested(indexed uint256,indexed uint24,indexed uint16,uint96,uint256,uint256)
   # - FeesUpdated(indexed uint256,uint256,uint256,uint256,uint256)
-  # - OperatorChanged(indexed uint256,address,address)
+  # / OperatorChanged(indexed uint256,address,address)
   # - OwnershipTransferred(indexed address,indexed address)
-  # - ProtocolFeesUpdated(uint8,uint8,uint8,uint8)
-  # - Revert(indexed uint256)
+  # / ProtocolFeesUpdated(uint8,uint8,uint8,uint8)
+  # / Revert(indexed uint256)
   # - Shutdown(uint256)
   # - TokenNotOwnedByUsersWithdrawn(address,address,address,uint256)
-  # - TokenRegistered(indexed address,indexed uint16)
+  # + TokenRegistered(indexed address,indexed uint16)
   # - WithdrawalCompleted(indexed uint24,indexed uint16,address,uint96)
   # - WithdrawalFailed(indexed uint24,indexed uint16,address,uint96)
   # - WithdrawalRequested(indexed uint256,indexed uint24,indexed uint16,uint96)

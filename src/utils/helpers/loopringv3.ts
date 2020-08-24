@@ -17,6 +17,8 @@ export function getOrCreateExchange(
 
   if (exchange == null && createIfNotFound) {
     exchange = new Exchange(id);
+    exchange.makerFeeBips = 0;
+    exchange.takerFeeBips = 0;
     exchange.exchangeStake = BIGDECIMAL_ZERO;
     exchange.exchangeStakeRaw = BIGINT_ZERO;
     exchange.protocolStake = BIGDECIMAL_ZERO;

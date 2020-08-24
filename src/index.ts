@@ -10,8 +10,14 @@ export {
 export {
   handleAccountCreated,
   handleAccountUpdated,
+  handleBlockCommitted,
   handleBlockVerified,
-  handleTokenRegistered
+  handleRevert,
+  handleBlockFinalized,
+  handleBlockFeeWithdrawn,
+  handleTokenRegistered,
+  handleOperatorChanged,
+  handleProtocolFeesUpdated
 } from "./mappings/exchangev3";
 
 export {

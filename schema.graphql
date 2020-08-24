@@ -13,6 +13,10 @@ type Exchange @entity {
 
   onChainDataAvailability: Boolean!
 
+  takerFeeBips: Int!
+
+  makerFeeBips: Int!
+
   exchangeStake: BigDecimal!
 
   exchangeStakeRaw: BigInt!
@@ -88,4 +92,39 @@ type User @entity {
   lrcBurnedRaw: BigInt!
 
   lrcBurned: BigDecimal!
+}
+
+enum BlockStatus {
+  Committed, Verified, Reverted
+}
+
+type Block @entity {
+  "Exchange ID + Block number"
+  id: ID!
+
+  exchange: Exchange!
+
+  status: BlockStatus!
+
+  publicDataHash: Bytes!
+
+  feesWithdrawn: BigInt!
+
+  # merkleRoot: Bytes
+  #
+  # blockState: Int
+  #
+  # blockType: Int
+  #
+  # blockSize: Int
+  #
+  # timestamp: BigInt
+  #
+  # numDepositRequestsCommitted: BigInt
+  #
+  # numWithdrawalRequestsCommitted: BigInt
+  #
+  # blockFeeWithdrawn: Boolean
+  #
+  # numWithdrawalsDistributed: BigInt
 }

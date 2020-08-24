@@ -2,15 +2,28 @@ import { log, BigInt } from "@graphprotocol/graph-ts";
 import {
   AccountCreated,
   AccountUpdated,
+  BlockCommitted,
   BlockVerified,
-  TokenRegistered
+  Revert,
+  BlockFeeWithdrawn,
+  BlockFinalized,
+  TokenRegistered,
+  OperatorChanged,
+  ProtocolFeesUpdated
 } from "../../generated/templates/ExchangeV3/ExchangeV3";
 import {
   getOrCreateExchange,
   getOrCreateAccount,
   getOrCreateToken,
-  getOrCreateUser
+  getOrCreateUser,
+  getOrCreateBlock
 } from "../utils/helpers";
+import {
+  BLOCK_STATUS_REVERTED,
+  BLOCK_STATUS_VERIFIED,
+  BLOCK_STATUS_COMMITTED,
+  BIGINT_ZERO
+} from "../utils/constants";
 
 // - event: AccountCreated(indexed address,indexed uint24,uint256,uint256)
 //   handler: handleAccountCreated
@@ -58,10 +71,6 @@ export function handleAccountUpdated(event: AccountUpdated): void {
 // - event: BlockVerified(indexed uint256)
 //   handler: handleBlockVerified
 
-export function handleBlockVerified(event: BlockVerified): void {
-  log.warning("Handle Block Verified", []);
-}
-
 // - event: TokenRegistered(indexed address,indexed uint16)
 //   handler: handleTokenRegistered
 
@@ -76,4 +85,101 @@ export function handleTokenRegistered(event: TokenRegistered): void {
   token.exchange = event.address.toHexString();
 
   token.save();
+}
+
+// - event: BlockCommitted(indexed uint256,indexed bytes32)
+//   handler: handleBlockCommitted
+
+export function handleBlockCommitted(event: BlockCommitted): void {
+  let blockId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.blockIdx.toString());
+  let block = getOrCreateBlock(blockId);
+
+  block.exchange = event.address.toHexString();
+  block.status = BLOCK_STATUS_COMMITTED;
+  block.publicDataHash = event.params.publicDataHash;
+  block.feesWithdrawn = BIGINT_ZERO;
+
+  block.save();
+}
+
+// - event: BlockVerified(indexed uint256)
+//   handler: handleBlockVerified
+
+export function handleBlockVerified(event: BlockVerified): void {
+  let blockId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.blockIdx.toString());
+  let block = getOrCreateBlock(blockId);
+
+  block.status = BLOCK_STATUS_VERIFIED;
+
+  block.save();
+}
+
+// - event: Revert(indexed uint256)
+//   handler: handleRevert
+
+export function handleRevert(event: Revert): void {
+  let blockId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.blockIdx.toString());
+  let block = getOrCreateBlock(blockId);
+
+  block.status = BLOCK_STATUS_REVERTED;
+
+  block.save();
+}
+
+// - event: BlockFinalized(indexed uint256)
+//   handler: handleBlockFinalized
+
+export function handleBlockFinalized(event: BlockFinalized): void {
+  // let blockId = event.address
+  //   .toHexString()
+  //   .concat("-")
+  //   .concat(event.params.blockIdx.toString());
+  // let block = getOrCreateBlock(blockId);
+}
+
+// - event: BlockFeeWithdrawn(indexed uint256,uint256)
+//   handler: handleBlockFeeWithdrawn
+
+export function handleBlockFeeWithdrawn(event: BlockFeeWithdrawn): void {
+  let blockId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.blockIdx.toString());
+  let block = getOrCreateBlock(blockId);
+
+  block.feesWithdrawn = block.feesWithdrawn + event.params.amount;
+
+  block.save();
+}
+
+// - event: OperatorChanged(indexed uint256,address,address)
+//   handler: handleOperatorChanged
+
+export function handleOperatorChanged(event: OperatorChanged): void {
+  let exchange = getOrCreateExchange(event.address.toHexString());
+
+  exchange.operator = event.params.newOperator;
+
+  exchange.save();
+}
+
+// - event: ProtocolFeesUpdated(uint8,uint8,uint8,uint8)
+//   handler: handleProtocolFeesUpdated
+
+export function handleProtocolFeesUpdated(event: ProtocolFeesUpdated): void {
+  let exchange = getOrCreateExchange(event.address.toHexString());
+
+  exchange.makerFeeBips = event.params.makerFeeBips;
+  exchange.takerFeeBips = event.params.takerFeeBips;
+
+  exchange.save();
 }
