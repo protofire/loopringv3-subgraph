@@ -128,3 +128,28 @@ type Block @entity {
   #
   # numWithdrawalsDistributed: BigInt
 }
+
+enum BlockType {
+    RING_SETTLEMENT,
+    DEPOSIT,
+    ONCHAIN_WITHDRAWAL,
+    OFFCHAIN_WITHDRAWAL,
+    ORDER_CANCELLATION,
+    TRANSFER
+}
+
+type Circuit @entity {
+  id: ID!
+
+  blockType: BlockType!
+
+  blockTypeRaw: Int!
+
+  onchainDataAvailability: Boolean!
+
+  blockSize: Int!
+
+  blockVersion: Int!
+
+  enabled: Boolean!
+}

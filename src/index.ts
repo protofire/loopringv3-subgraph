@@ -24,3 +24,8 @@ export {
   handleLRCTransfer,
   handleLRCBurn
 } from "./mappings/lrcv2";
+
+export {
+  handleCircuitRegistered,
+  handleCircuitDisabled
+} from "./mappings/blockVerifier";
