@@ -7,6 +7,8 @@ type Exchange @entity {
 
   implementationAddress: Bytes
 
+  addressWhitelist: Bytes
+
   owner: Bytes!
 
   operator: Bytes!
@@ -16,6 +18,14 @@ type Exchange @entity {
   takerFeeBips: Int!
 
   makerFeeBips: Int!
+
+  accountCreationFee: BigInt!
+
+  accountUpdateFee: BigInt!
+
+  depositFee: BigInt!
+
+  withdrawalFee: BigInt!
 
   exchangeStake: BigDecimal!
 
@@ -110,23 +120,21 @@ type Block @entity {
 
   feesWithdrawn: BigInt!
 
-  # merkleRoot: Bytes
-  #
-  # blockState: Int
-  #
-  # blockType: Int
-  #
-  # blockSize: Int
-  #
-  # timestamp: BigInt
-  #
-  # numDepositRequestsCommitted: BigInt
-  #
-  # numWithdrawalRequestsCommitted: BigInt
-  #
-  # blockFeeWithdrawn: Boolean
-  #
-  # numWithdrawalsDistributed: BigInt
+  merkleRoot: Bytes
+
+  blockType: Int
+
+  blockSize: Int
+
+  timestamp: BigInt
+
+  numDepositRequestsCommitted: BigInt
+
+  numWithdrawalRequestsCommitted: BigInt
+
+  blockFeeWithdrawn: Boolean
+
+  numWithdrawalsDistributed: Int
 }
 
 enum BlockType {

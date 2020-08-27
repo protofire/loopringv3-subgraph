@@ -17,7 +17,9 @@ export {
   handleBlockFeeWithdrawn,
   handleTokenRegistered,
   handleOperatorChanged,
-  handleProtocolFeesUpdated
+  handleProtocolFeesUpdated,
+  handleFeesUpdated,
+  handleAddressWhitelistChanged
 } from "./mappings/exchangev3";
 
 export {

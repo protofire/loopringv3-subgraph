@@ -9,7 +9,10 @@ import {
   BlockFinalized,
   TokenRegistered,
   OperatorChanged,
-  ProtocolFeesUpdated
+  ProtocolFeesUpdated,
+  AddressWhitelistChanged,
+  FeesUpdated,
+  ExchangeV3
 } from "../../generated/templates/ExchangeV3/ExchangeV3";
 import {
   getOrCreateExchange,
@@ -96,6 +99,19 @@ export function handleBlockCommitted(event: BlockCommitted): void {
     .concat("-")
     .concat(event.params.blockIdx.toString());
   let block = getOrCreateBlock(blockId);
+  let exchangeContract = ExchangeV3.bind(event.address);
+  let blockData = exchangeContract.try_getBlock(event.params.blockIdx);
+
+  if(!blockData.reverted) {
+    block.merkleRoot = blockData.value.value0;
+    block.blockType = blockData.value.value3;
+    block.blockSize = blockData.value.value4;
+    block.timestamp = blockData.value.value5;
+    block.numDepositRequestsCommitted = blockData.value.value6
+    block.numWithdrawalRequestsCommitted = blockData.value.value7
+    block.blockFeeWithdrawn = blockData.value.value8
+    block.numWithdrawalsDistributed = blockData.value.value9
+  }
 
   block.exchange = event.address.toHexString();
   block.status = BLOCK_STATUS_COMMITTED;
@@ -180,6 +196,31 @@ export function handleProtocolFeesUpdated(event: ProtocolFeesUpdated): void {
 
   exchange.makerFeeBips = event.params.makerFeeBips;
   exchange.takerFeeBips = event.params.takerFeeBips;
+
+  exchange.save();
+}
+
+// - event: FeesUpdated(indexed uint256,uint256,uint256,uint256,uint256)
+//   handler: handleFeesUpdated
+
+export function handleFeesUpdated(event: FeesUpdated): void {
+  let exchange = getOrCreateExchange(event.address.toHexString());
+
+  exchange.accountCreationFee = event.params.accountCreationFeeETH;
+  exchange.accountUpdateFee = event.params.accountUpdateFeeETH;
+  exchange.depositFee = event.params.depositFeeETH;
+  exchange.withdrawalFee = event.params.withdrawalFeeETH;
+
+  exchange.save();
+}
+
+// - event: AddressWhitelistChanged(indexed uint256,address,address)
+//   handler: handleAddressWhitelistChanged
+
+export function handleAddressWhitelistChanged(event: AddressWhitelistChanged): void {
+  let exchange = getOrCreateExchange(event.address.toHexString());
+
+  exchange.addressWhitelist = event.params.newAddressWhitelist;
 
   exchange.save();
 }

@@ -19,6 +19,10 @@ export function getOrCreateExchange(
     exchange = new Exchange(id);
     exchange.makerFeeBips = 0;
     exchange.takerFeeBips = 0;
+    exchange.accountCreationFee = BIGINT_ZERO;
+    exchange.accountUpdateFee = BIGINT_ZERO;
+    exchange.depositFee = BIGINT_ZERO;
+    exchange.withdrawalFee = BIGINT_ZERO;
     exchange.exchangeStake = BIGDECIMAL_ZERO;
     exchange.exchangeStakeRaw = BIGINT_ZERO;
     exchange.protocolStake = BIGDECIMAL_ZERO;
