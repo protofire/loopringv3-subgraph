@@ -58,9 +58,80 @@ type Exchange @entity {
   accounts: [Account!]! @derivedFrom(field: "exchange")
 
   tokens: [Token!]! @derivedFrom(field: "exchange")
+
+  blocks: [Block!]! @derivedFrom(field: "exchange")
+}
+
+interface OnChainTransactionEvent {
+  id: ID!
+
+  exchange: Exchange!
+
+  account: Account!
+
+  token: Token!
+
+  amount: BigInt!
+}
+
+type DepositRequestedEvent implements OnChainTransactionEvent @entity {
+  id: ID!
+
+  exchange: Exchange!
+
+  account: Account!
+
+  token: Token!
+
+  amount: BigInt!
+
+  pubKeyY: BigInt!
+
+  pubKeyX: BigInt!
+}
+
+type WithdrawalRequestedEvent implements OnChainTransactionEvent @entity {
+  id: ID!
+
+  exchange: Exchange!
+
+  account: Account!
+
+  token: Token!
+
+  amount: BigInt!
+}
+
+type WithdrawalFailedEvent implements OnChainTransactionEvent @entity {
+  id: ID!
+
+  exchange: Exchange!
+
+  account: Account!
+
+  token: Token!
+
+  amount: BigInt!
+
+  to: Bytes!
+}
+
+type WithdrawalCompletedEvent implements OnChainTransactionEvent @entity {
+  id: ID!
+
+  exchange: Exchange!
+
+  account: Account!
+
+  token: Token!
+
+  amount: BigInt!
+
+  to: Bytes!
 }
 
 type Account @entity {
+  "Exchange address + internal ID"
   id: ID!
 
   exchange: Exchange!
@@ -72,9 +143,29 @@ type Account @entity {
   pubKeyY: BigInt!
 
   owner: User!
+
+  balances: [AccountTokenBalance!]! @derivedFrom(field: "account")
+}
+
+type AccountTokenBalance @entity {
+  "Exchange address + Account internal ID + token internal ID"
+  id: ID!
+
+  exchange: Exchange!
+
+  account: Account!
+
+  token: Token!
+
+  balanceRaw: BigInt!
+
+  totalDepositedRaw: BigInt!
+
+  totalWithdrawnRaw: BigInt!
 }
 
 type Token @entity {
+  "Exchange Address + internal ID"
   id: ID!
 
   exchange: Exchange!
@@ -91,6 +182,7 @@ type Token @entity {
 }
 
 type User @entity {
+  "Ethereum address"
   id: ID!
 
   account: Account! @derivedFrom(field: "owner")

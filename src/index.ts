@@ -19,7 +19,11 @@ export {
   handleOperatorChanged,
   handleProtocolFeesUpdated,
   handleFeesUpdated,
-  handleAddressWhitelistChanged
+  handleAddressWhitelistChanged,
+  handleDepositRequested,
+  handleWithdrawalFailed,
+  handleWithdrawalCompleted,
+  handleWithdrawalRequested
 } from "./mappings/exchangev3";
 
 export {

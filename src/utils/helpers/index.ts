@@ -1,4 +1,23 @@
-export { getOrCreateExchange, getUniversalRegistryContract } from "./loopringv3";
-export { getOrCreateAccount, getOrCreateToken, getOrCreateBlock } from "./exchangev3";
+export {
+  getOrCreateExchange,
+  getUniversalRegistryContract
+} from "./loopringv3";
+
+export {
+  getOrCreateAccount,
+  getOrCreateToken,
+  getOrCreateBlock,
+  getOrCreateWithdrawalFailedEvent,
+  getOrCreateWithdrawalCompletedEvent,
+  getOrCreateWithdrawalRequestedEvent,
+  getOrCreateDepositRequestedEvent,
+  getOrCreateAccountTokenBalance
+} from "./exchangev3";
+
 export { getOrCreateUser } from "./lrcv2";
-export { getCircuitId, getOrCreateCircuit, getBlockType } from "./blockVerifier";
+
+export {
+  getCircuitId,
+  getOrCreateCircuit,
+  getBlockType
+} from "./blockVerifier";

@@ -12,6 +12,10 @@ import {
   ProtocolFeesUpdated,
   AddressWhitelistChanged,
   FeesUpdated,
+  WithdrawalFailed,
+  WithdrawalCompleted,
+  WithdrawalRequested,
+  DepositRequested,
   ExchangeV3
 } from "../../generated/templates/ExchangeV3/ExchangeV3";
 import {
@@ -19,7 +23,12 @@ import {
   getOrCreateAccount,
   getOrCreateToken,
   getOrCreateUser,
-  getOrCreateBlock
+  getOrCreateBlock,
+  getOrCreateDepositRequestedEvent,
+  getOrCreateWithdrawalFailedEvent,
+  getOrCreateWithdrawalCompletedEvent,
+  getOrCreateWithdrawalRequestedEvent,
+  getOrCreateAccountTokenBalance
 } from "../utils/helpers";
 import {
   BLOCK_STATUS_REVERTED,
@@ -102,15 +111,15 @@ export function handleBlockCommitted(event: BlockCommitted): void {
   let exchangeContract = ExchangeV3.bind(event.address);
   let blockData = exchangeContract.try_getBlock(event.params.blockIdx);
 
-  if(!blockData.reverted) {
+  if (!blockData.reverted) {
     block.merkleRoot = blockData.value.value0;
     block.blockType = blockData.value.value3;
     block.blockSize = blockData.value.value4;
     block.timestamp = blockData.value.value5;
-    block.numDepositRequestsCommitted = blockData.value.value6
-    block.numWithdrawalRequestsCommitted = blockData.value.value7
-    block.blockFeeWithdrawn = blockData.value.value8
-    block.numWithdrawalsDistributed = blockData.value.value9
+    block.numDepositRequestsCommitted = blockData.value.value6;
+    block.numWithdrawalRequestsCommitted = blockData.value.value7;
+    block.blockFeeWithdrawn = blockData.value.value8;
+    block.numWithdrawalsDistributed = blockData.value.value9;
   }
 
   block.exchange = event.address.toHexString();
@@ -217,10 +226,148 @@ export function handleFeesUpdated(event: FeesUpdated): void {
 // - event: AddressWhitelistChanged(indexed uint256,address,address)
 //   handler: handleAddressWhitelistChanged
 
-export function handleAddressWhitelistChanged(event: AddressWhitelistChanged): void {
+export function handleAddressWhitelistChanged(
+  event: AddressWhitelistChanged
+): void {
   let exchange = getOrCreateExchange(event.address.toHexString());
 
   exchange.addressWhitelist = event.params.newAddressWhitelist;
 
   exchange.save();
+}
+
+// - event: DepositRequested(indexed uint256,indexed uint24,indexed uint16,uint96,uint256,uint256)
+//   handler: handleDepositRequested
+
+export function handleDepositRequested(event: DepositRequested): void {
+  let eventId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string)
+    .concat("-")
+    .concat(event.params.depositIdx.toString());
+  let transactionEvent = getOrCreateDepositRequestedEvent(eventId);
+  let balanceId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string)
+    .concat("-")
+    .concat(event.params.tokenID as string);
+  let accountBalance = getOrCreateAccountTokenBalance(balanceId)
+
+  transactionEvent.exchange = event.address.toHexString();
+  transactionEvent.account = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string);
+  transactionEvent.token = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.tokenID as string);
+  transactionEvent.amount = event.params.amount;
+  transactionEvent.pubKeyX = event.params.pubKeyX;
+  transactionEvent.pubKeyY = event.params.pubKeyY;
+
+  accountBalance.account = transactionEvent.account;
+  accountBalance.token = transactionEvent.token;
+  accountBalance.exchange = transactionEvent.exchange;
+  accountBalance.balanceRaw = accountBalance.balanceRaw + transactionEvent.amount;
+  accountBalance.totalDepositedRaw = accountBalance.totalDepositedRaw + transactionEvent.amount;
+
+  transactionEvent.save();
+  accountBalance.save();
+}
+
+// - event: WithdrawalCompleted(indexed uint24,indexed uint16,address,uint96)
+//   handler: handleWithdrawalCompleted
+
+export function handleWithdrawalCompleted(event: WithdrawalCompleted): void {
+  let eventId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string)
+    .concat("-")
+    .concat(event.params.to.toHexString());
+  let transactionEvent = getOrCreateWithdrawalCompletedEvent(eventId);
+  let balanceId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string)
+    .concat("-")
+    .concat(event.params.tokenID as string);
+  let accountBalance = getOrCreateAccountTokenBalance(balanceId)
+
+  transactionEvent.exchange = event.address.toHexString();
+  transactionEvent.account = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string);
+  transactionEvent.token = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.tokenID as string);
+  transactionEvent.amount = event.params.amount;
+  transactionEvent.to = event.params.to;
+
+  accountBalance.account = transactionEvent.account;
+  accountBalance.token = transactionEvent.token;
+  accountBalance.exchange = transactionEvent.exchange;
+  accountBalance.balanceRaw = accountBalance.balanceRaw - transactionEvent.amount;
+  accountBalance.totalWithdrawnRaw = accountBalance.totalWithdrawnRaw + transactionEvent.amount;
+
+  transactionEvent.save();
+  accountBalance.save();
+}
+
+// - event: WithdrawalFailed(indexed uint24,indexed uint16,address,uint96)
+//   handler: handleWithdrawalFailed
+
+export function handleWithdrawalFailed(event: WithdrawalFailed): void {
+  let eventId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string)
+    .concat("-")
+    .concat(event.params.to.toHexString());
+  let transactionEvent = getOrCreateWithdrawalFailedEvent(eventId);
+
+  transactionEvent.exchange = event.address.toHexString();
+  transactionEvent.account = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string);
+  transactionEvent.token = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.tokenID as string);
+  transactionEvent.amount = event.params.amount;
+  transactionEvent.to = event.params.to;
+
+  transactionEvent.save();
+}
+
+// - event: WithdrawalRequested(indexed uint256,indexed uint24,indexed uint16,uint96)
+//   handler: handleWithdrawalRequested
+
+export function handleWithdrawalRequested(event: WithdrawalRequested): void {
+  let eventId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string)
+    .concat("-")
+    .concat(event.params.withdrawalIdx.toString());
+  let transactionEvent = getOrCreateWithdrawalRequestedEvent(eventId);
+
+  transactionEvent.exchange = event.address.toHexString();
+  transactionEvent.account = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.accountID as string);
+  transactionEvent.token = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.tokenID as string);
+  transactionEvent.amount = event.params.amount;
+
+  transactionEvent.save();
 }
