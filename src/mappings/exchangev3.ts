@@ -243,27 +243,28 @@ export function handleDepositRequested(event: DepositRequested): void {
   let eventId = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string)
+    .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
-    .concat(event.params.depositIdx.toString());
+    .concat(event.params.depositIdx.toString())
+    .concat("-DEPOSIT-REQUEST");
   let transactionEvent = getOrCreateDepositRequestedEvent(eventId);
   let balanceId = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string)
+    .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
-    .concat(event.params.tokenID as string);
+    .concat(BigInt.fromI32(event.params.tokenID).toString());
   let accountBalance = getOrCreateAccountTokenBalance(balanceId)
 
   transactionEvent.exchange = event.address.toHexString();
   transactionEvent.account = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string);
+    .concat(BigInt.fromI32(event.params.accountID).toString());
   transactionEvent.token = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.tokenID as string);
+    .concat(BigInt.fromI32(event.params.tokenID).toString());
   transactionEvent.amount = event.params.amount;
   transactionEvent.pubKeyX = event.params.pubKeyX;
   transactionEvent.pubKeyY = event.params.pubKeyY;
@@ -285,27 +286,28 @@ export function handleWithdrawalCompleted(event: WithdrawalCompleted): void {
   let eventId = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string)
+    .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
-    .concat(event.params.to.toHexString());
+    .concat(event.params.to.toHexString())
+    .concat("-WITHDRAW-COMPLETED");
   let transactionEvent = getOrCreateWithdrawalCompletedEvent(eventId);
   let balanceId = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string)
+    .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
-    .concat(event.params.tokenID as string);
+    .concat(BigInt.fromI32(event.params.tokenID).toString());
   let accountBalance = getOrCreateAccountTokenBalance(balanceId)
 
   transactionEvent.exchange = event.address.toHexString();
   transactionEvent.account = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string);
+    .concat(BigInt.fromI32(event.params.accountID).toString());
   transactionEvent.token = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.tokenID as string);
+    .concat(BigInt.fromI32(event.params.tokenID).toString());
   transactionEvent.amount = event.params.amount;
   transactionEvent.to = event.params.to;
 
@@ -326,20 +328,21 @@ export function handleWithdrawalFailed(event: WithdrawalFailed): void {
   let eventId = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string)
+    .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
-    .concat(event.params.to.toHexString());
+    .concat(event.params.to.toHexString())
+    .concat("-WITHDRAW-FAILED");
   let transactionEvent = getOrCreateWithdrawalFailedEvent(eventId);
 
   transactionEvent.exchange = event.address.toHexString();
   transactionEvent.account = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string);
+    .concat(BigInt.fromI32(event.params.accountID).toString());
   transactionEvent.token = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.tokenID as string);
+    .concat(BigInt.fromI32(event.params.tokenID).toString());
   transactionEvent.amount = event.params.amount;
   transactionEvent.to = event.params.to;
 
@@ -353,20 +356,21 @@ export function handleWithdrawalRequested(event: WithdrawalRequested): void {
   let eventId = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string)
+    .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
-    .concat(event.params.withdrawalIdx.toString());
+    .concat(event.params.withdrawalIdx.toString())
+    .concat("-WITHDRAW-REQUEST")
   let transactionEvent = getOrCreateWithdrawalRequestedEvent(eventId);
 
   transactionEvent.exchange = event.address.toHexString();
   transactionEvent.account = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.accountID as string);
+    .concat(BigInt.fromI32(event.params.accountID).toString());
   transactionEvent.token = event.address
     .toHexString()
     .concat("-")
-    .concat(event.params.tokenID as string);
+    .concat(BigInt.fromI32(event.params.tokenID).toString());
   transactionEvent.amount = event.params.amount;
 
   transactionEvent.save();

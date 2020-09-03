@@ -185,7 +185,7 @@ type User @entity {
   "Ethereum address"
   id: ID!
 
-  account: Account! @derivedFrom(field: "owner")
+  account: Account @derivedFrom(field: "owner")
 
   lrcBalanceRaw: BigInt!
 

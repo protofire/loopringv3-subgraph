@@ -5,11 +5,11 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ juanmardefago/loopring-v3",
-    "deploy-dev": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ juanmardefago/loopring-v3",
-    "create-local": "graph create --node http://localhost:8020/ juanmardefago/loopring-v3",
-    "remove-local": "graph remove --node http://localhost:8020/ juanmardefago/loopring-v3",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 juanmardefago/loopring-v3"
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ protofire/loopring-3_1",
+    "deploy-dev": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ protofire/loopring-3_1",
+    "create-local": "graph create --node http://localhost:8020/ protofire/loopring-3_1",
+    "remove-local": "graph remove --node http://localhost:8020/ protofire/loopring-3_1",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 protofire/loopring-3_1"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.18.0",
