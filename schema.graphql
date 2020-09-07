@@ -1,18 +1,26 @@
 type Exchange @entity {
+  "Address of the exchange"
   id: ID!
 
+  "Internal ID of the exchange in the loopring protocol"
   internalId: BigInt!
 
+  "Address of the proxy. It matches with the ID since exchanges use a proxy structure for upgrades"
   proxyAddress: Bytes!
 
+  "Address of the implementation contract"
   implementationAddress: Bytes
 
+  "AddressWhitelist contract address"
   addressWhitelist: Bytes
 
+  "Ethereum address of the owner"
   owner: Bytes!
 
+  "Ethereum address of the operator"
   operator: Bytes!
 
+  "Whether or not this exchange has on chain data"
   onChainDataAvailability: Boolean!
 
   takerFeeBips: Int!
@@ -60,6 +68,8 @@ type Exchange @entity {
   tokens: [Token!]! @derivedFrom(field: "exchange")
 
   blocks: [Block!]! @derivedFrom(field: "exchange")
+
+  transactionEvents: [OnChainTransactionEvent!]! @derivedFrom(field: "exchange")
 }
 
 interface OnChainTransactionEvent {
@@ -136,19 +146,26 @@ type Account @entity {
 
   exchange: Exchange!
 
+  "Internal ID of the account within the Exchange scope"
   internalId: Int!
 
+  "X Value of the public key"
   pubKeyX: BigInt!
 
+  "Y Value of the public key"
   pubKeyY: BigInt!
 
+  "User that owns the account"
   owner: User!
 
+  "List of balances for this account within the exchange"
   balances: [AccountTokenBalance!]! @derivedFrom(field: "account")
+
+  transactionEvents: [OnChainTransactionEvent!]! @derivedFrom(field: "account")
 }
 
 type AccountTokenBalance @entity {
-  "Exchange address + Account internal ID + token internal ID"
+  "Exchange address + Account internal ID + token internal ID. Withdrawn amounts can be greater than deposits since tokens will be exchanged. We can't track trades as they are not part of the L1."
   id: ID!
 
   exchange: Exchange!
@@ -157,9 +174,13 @@ type AccountTokenBalance @entity {
 
   token: Token!
 
-  balanceRaw: BigInt!
+  "Total amount of this token deposited to the account"
+  totalDeposited: BigDecimal!
 
   totalDepositedRaw: BigInt!
+
+  "Total amount of this token withdrawn from the account"
+  totalWithdrawn: BigDecimal!
 
   totalWithdrawnRaw: BigInt!
 }
@@ -170,6 +191,7 @@ type Token @entity {
 
   exchange: Exchange!
 
+  "Internal ID of the token within the exchange"
   internalId: Int!
 
   address: Bytes!
@@ -179,12 +201,15 @@ type Token @entity {
   name: String!
 
   symbol: String!
+
+  transactionEvents: [OnChainTransactionEvent!]! @derivedFrom(field: "token")
 }
 
 type User @entity {
   "Ethereum address"
   id: ID!
 
+  "Related Loopring account. Might not exist if the user only traded LRC but never used loopring."
   account: Account @derivedFrom(field: "owner")
 
   lrcBalanceRaw: BigInt!
@@ -214,7 +239,9 @@ type Block @entity {
 
   merkleRoot: Bytes
 
-  blockType: Int
+  blockType: BlockType
+
+  blockTypeRaw: Int
 
   blockSize: Int
 

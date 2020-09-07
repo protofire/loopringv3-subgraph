@@ -11,7 +11,8 @@ export {
   getOrCreateWithdrawalCompletedEvent,
   getOrCreateWithdrawalRequestedEvent,
   getOrCreateDepositRequestedEvent,
-  getOrCreateAccountTokenBalance
+  getOrCreateAccountTokenBalance,
+  getToken
 } from "./exchangev3";
 
 export { getOrCreateUser } from "./lrcv2";

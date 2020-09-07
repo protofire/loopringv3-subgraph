@@ -28,7 +28,9 @@ import {
   getOrCreateWithdrawalFailedEvent,
   getOrCreateWithdrawalCompletedEvent,
   getOrCreateWithdrawalRequestedEvent,
-  getOrCreateAccountTokenBalance
+  getOrCreateAccountTokenBalance,
+  getBlockType,
+  getToken
 } from "../utils/helpers";
 import {
   BLOCK_STATUS_REVERTED,
@@ -36,6 +38,7 @@ import {
   BLOCK_STATUS_COMMITTED,
   BIGINT_ZERO
 } from "../utils/constants";
+import { DEFAULT_DECIMALS, toDecimal } from "../utils/decimals";
 
 // - event: AccountCreated(indexed address,indexed uint24,uint256,uint256)
 //   handler: handleAccountCreated
@@ -59,6 +62,7 @@ export function handleAccountCreated(event: AccountCreated): void {
   account.pubKeyY = event.params.pubKeyY;
 
   account.save();
+  user.save();
 }
 
 // - event: AccountUpdated(indexed address,indexed uint24,uint256,uint256)
@@ -78,6 +82,7 @@ export function handleAccountUpdated(event: AccountUpdated): void {
   account.pubKeyY = event.params.pubKeyY;
 
   account.save();
+  user.save();
 }
 
 // - event: BlockVerified(indexed uint256)
@@ -113,7 +118,8 @@ export function handleBlockCommitted(event: BlockCommitted): void {
 
   if (!blockData.reverted) {
     block.merkleRoot = blockData.value.value0;
-    block.blockType = blockData.value.value3;
+    block.blockTypeRaw = blockData.value.value3;
+    block.blockType = getBlockType(block.blockTypeRaw);
     block.blockSize = blockData.value.value4;
     block.timestamp = blockData.value.value5;
     block.numDepositRequestsCommitted = blockData.value.value6;
@@ -164,11 +170,27 @@ export function handleRevert(event: Revert): void {
 //   handler: handleBlockFinalized
 
 export function handleBlockFinalized(event: BlockFinalized): void {
-  // let blockId = event.address
-  //   .toHexString()
-  //   .concat("-")
-  //   .concat(event.params.blockIdx.toString());
-  // let block = getOrCreateBlock(blockId);
+  let blockId = event.address
+    .toHexString()
+    .concat("-")
+    .concat(event.params.blockIdx.toString());
+  let block = getOrCreateBlock(blockId);
+  let exchangeContract = ExchangeV3.bind(event.address);
+  let blockData = exchangeContract.try_getBlock(event.params.blockIdx);
+
+  if (!blockData.reverted) {
+    block.merkleRoot = blockData.value.value0;
+    block.blockTypeRaw = blockData.value.value3;
+    block.blockType = getBlockType(block.blockTypeRaw);
+    block.blockSize = blockData.value.value4;
+    block.timestamp = blockData.value.value5;
+    block.numDepositRequestsCommitted = blockData.value.value6;
+    block.numWithdrawalRequestsCommitted = blockData.value.value7;
+    block.blockFeeWithdrawn = blockData.value.value8;
+    block.numWithdrawalsDistributed = blockData.value.value9;
+  }
+
+  block.save();
 }
 
 // - event: BlockFeeWithdrawn(indexed uint256,uint256)
@@ -254,7 +276,7 @@ export function handleDepositRequested(event: DepositRequested): void {
     .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
     .concat(BigInt.fromI32(event.params.tokenID).toString());
-  let accountBalance = getOrCreateAccountTokenBalance(balanceId)
+  let accountBalance = getOrCreateAccountTokenBalance(balanceId);
 
   transactionEvent.exchange = event.address.toHexString();
   transactionEvent.account = event.address
@@ -269,11 +291,18 @@ export function handleDepositRequested(event: DepositRequested): void {
   transactionEvent.pubKeyX = event.params.pubKeyX;
   transactionEvent.pubKeyY = event.params.pubKeyY;
 
+  let token = getToken(transactionEvent.token);
+  let decimals = token != null ? token.decimals : DEFAULT_DECIMALS;
+
   accountBalance.account = transactionEvent.account;
   accountBalance.token = transactionEvent.token;
   accountBalance.exchange = transactionEvent.exchange;
-  accountBalance.balanceRaw = accountBalance.balanceRaw + transactionEvent.amount;
-  accountBalance.totalDepositedRaw = accountBalance.totalDepositedRaw + transactionEvent.amount;
+  accountBalance.totalDepositedRaw =
+    accountBalance.totalDepositedRaw + transactionEvent.amount;
+  accountBalance.totalDeposited = toDecimal(
+    accountBalance.totalDepositedRaw,
+    decimals
+  );
 
   transactionEvent.save();
   accountBalance.save();
@@ -297,7 +326,7 @@ export function handleWithdrawalCompleted(event: WithdrawalCompleted): void {
     .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
     .concat(BigInt.fromI32(event.params.tokenID).toString());
-  let accountBalance = getOrCreateAccountTokenBalance(balanceId)
+  let accountBalance = getOrCreateAccountTokenBalance(balanceId);
 
   transactionEvent.exchange = event.address.toHexString();
   transactionEvent.account = event.address
@@ -311,11 +340,18 @@ export function handleWithdrawalCompleted(event: WithdrawalCompleted): void {
   transactionEvent.amount = event.params.amount;
   transactionEvent.to = event.params.to;
 
+  let token = getToken(transactionEvent.token);
+  let decimals = token != null ? token.decimals : DEFAULT_DECIMALS;
+
   accountBalance.account = transactionEvent.account;
   accountBalance.token = transactionEvent.token;
   accountBalance.exchange = transactionEvent.exchange;
-  accountBalance.balanceRaw = accountBalance.balanceRaw - transactionEvent.amount;
-  accountBalance.totalWithdrawnRaw = accountBalance.totalWithdrawnRaw + transactionEvent.amount;
+  accountBalance.totalWithdrawnRaw =
+    accountBalance.totalWithdrawnRaw + transactionEvent.amount;
+  accountBalance.totalWithdrawn = toDecimal(
+    accountBalance.totalWithdrawnRaw,
+    decimals
+  );
 
   transactionEvent.save();
   accountBalance.save();
@@ -359,7 +395,7 @@ export function handleWithdrawalRequested(event: WithdrawalRequested): void {
     .concat(BigInt.fromI32(event.params.accountID).toString())
     .concat("-")
     .concat(event.params.withdrawalIdx.toString())
-    .concat("-WITHDRAW-REQUEST")
+    .concat("-WITHDRAW-REQUEST");
   let transactionEvent = getOrCreateWithdrawalRequestedEvent(eventId);
 
   transactionEvent.exchange = event.address.toHexString();

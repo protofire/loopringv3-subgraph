@@ -11,7 +11,7 @@ import {
 import { ERC20 } from "../../../generated/templates/ERC20/ERC20";
 import { Address } from "@graphprotocol/graph-ts";
 import { DEFAULT_DECIMALS } from "../../utils/decimals";
-import { BIGINT_ZERO } from "../../utils/constants";
+import { BIGINT_ZERO, BIGDECIMAL_ZERO } from "../../utils/constants";
 
 export function getOrCreateAccount(
   id: String,
@@ -34,9 +34,10 @@ export function getOrCreateAccountTokenBalance(
 
   if (balance == null && createIfNotFound) {
     balance = new AccountTokenBalance(id);
-    balance.balanceRaw = BIGINT_ZERO;
     balance.totalDepositedRaw = BIGINT_ZERO;
+    balance.totalDeposited = BIGDECIMAL_ZERO;
     balance.totalWithdrawnRaw = BIGINT_ZERO;
+    balance.totalWithdrawn = BIGDECIMAL_ZERO;
   }
 
   return balance as AccountTokenBalance;
@@ -66,6 +67,11 @@ export function getOrCreateToken(
   }
 
   return token as Token;
+}
+
+export function getToken(tokenId: String): Token | null {
+  let token = Token.load(tokenId);
+  return token;
 }
 
 export function getOrCreateBlock(
